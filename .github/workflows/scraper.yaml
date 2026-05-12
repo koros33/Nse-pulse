@@ -2,12 +2,13 @@ name: Daily Scraper
 
 on:
   schedule:
-    - cron: '0 21 * * 1-5'  # 21:00 UTC = 4PM EST Mon-Fri
-  workflow_dispatch:          # allows manual trigger
+    - cron: '0 21 * * 1-5'   # 21:00 UTC = 4PM EST Mon–Fri
+  workflow_dispatch:         # allows manual trigger
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -16,7 +17,9 @@ jobs:
           python-version: '3.12'
 
       - name: Install dependencies
-        run: pip install -r scraper/requirements.txt
+        run: |
+          cd scraper
+          pip install -r requirements.txt
 
       - name: Run scraper
         env:
