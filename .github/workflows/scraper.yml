@@ -2,8 +2,8 @@ name: Daily Scraper
 
 on:
   schedule:
-    - cron: '0 21 * * 1-5'
-  workflow_dispatch:
+    - cron: '0 21 * * 1-5'     # Weekdays at 9 PM UTC (after US market close)
+  workflow_dispatch:           # Allows manual run
 
 jobs:
   scrape:
@@ -24,17 +24,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Debug Secrets
-        env:
-          DATABASE_URL: ${{ secrets.DBSECRETS }}
-        run: |
-          echo "🔍 Debug Secrets Step"
-          echo "📡 Secret exists (GitHub context): ${{ secrets.DATABASE_URL != '' }}"
-          echo "📡 Env var length: ${#DATABASE_URL}"
-          echo "📡 First 80 chars: ${DATABASE_URL:0:80}..."
-
       - name: Run Scraper
         working-directory: ./scraper
         env:
-          DATABASE_URL: ${{ secrets.DBSECRETS }}
-        run: python scraper.py
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          echo "🚀 Starting Daily Scraper..."
+          python scraper.py
