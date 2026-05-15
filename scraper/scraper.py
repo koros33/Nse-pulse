@@ -36,16 +36,28 @@ BASE_VALUE = Decimal("100")
 
 def get_conn():
     db_url = os.getenv("DATABASE_URL")
-
+    
     if not db_url:
-        raise ValueError("DATABASE_URL is missing")
+        raise ValueError("DATABASE_URL is missing from environment!")
 
-    log.info("Connecting to PostgreSQL...")
+    log.info("DATABASE_URL found (length: %d)", len(db_url))
 
-    return psycopg2.connect(
-        db_url,
-        sslmode="require"
-    )
+    try:
+        # Force proper parsing + Neon requirements
+        conn = psycopg2.connect(
+            db_url,
+            sslmode="require",
+            connect_timeout=20,
+            keepalives=1,
+            keepalives_idle=30,
+            keepalives_interval=10,
+            keepalives_count=5
+        )
+        log.info("✅ Successfully connected to Neon PostgreSQL")
+        return conn
+    except Exception as e:
+        log.error("Connection failed: %s", e)
+        raise
 
 
 def get_stocks(cur):
