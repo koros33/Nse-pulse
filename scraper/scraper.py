@@ -41,18 +41,15 @@ def get_conn():
         raise ValueError("DATABASE_URL is missing from environment!")
 
     log.info("DATABASE_URL found (length: %d)", len(db_url))
+    log.info("DATABASE_URL starts with: %s...", db_url[:80])   # ← Add this line
 
     try:
-        # Clean connection for Neon
-        conn = psycopg2.connect(
-            db_url,                    # ← Just pass the URL directly
-            sslmode="require",
-            connect_timeout=30
-        )
-        log.info("✅ Successfully connected to Neon DB")
+        # Most explicit way for Neon
+        conn = psycopg2.connect(db_url, sslmode="require")
+        log.info("✅ Successfully connected to Neon!")
         return conn
     except Exception as e:
-        log.error("Connection failed: %s", e)
+        log.error("Connection failed: %s", str(e))
         raise
 
 
