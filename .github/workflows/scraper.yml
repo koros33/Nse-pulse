@@ -2,8 +2,8 @@ name: Daily Scraper
 
 on:
   schedule:
-    - cron: '0 21 * * 1-5'   # Weekdays ~9PM UTC (after US market close)
-  workflow_dispatch:         # Manual trigger
+    - cron: '0 21 * * 1-5'
+  workflow_dispatch:
 
 jobs:
   scrape:
@@ -21,15 +21,20 @@ jobs:
       - name: Install dependencies
         working-directory: ./scraper
         run: |
-          pip install --upgrade pip
+          python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Scraper
-        working-directory: ./scraper
+      - name: Debug Secrets
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           echo "🔍 Starting scraper..."
           echo "📡 DATABASE_URL configured: ${{ secrets.DATABASE_URL != '' }}"
-          echo "📡 URL prefix: ${DATABASE_URL:0:65}..."
-          python scraper.py
+          echo "📡 URL prefix: ${DATABASE_URL:0:70}..."
+          echo "📡 Length of DATABASE_URL: ${#DATABASE_URL}"
+
+      - name: Run Scraper
+        working-directory: ./scraper
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: python scraper.py
